@@ -8,17 +8,21 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "generate": "buf generate"
   },
   "dependencies": {
-    "@bufbuild/connect": "^0.13.0",
-    "@bufbuild/connect-web": "^0.13.0",
+    "@bufbuild/connect": "^0.11.0",
+    "@bufbuild/connect-web": "^0.11.0",
     "@bufbuild/protobuf": "^1.4.0",
     "next": "14.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@bufbuild/buf": "^1.53.0",
+    "@bufbuild/protoc-gen-connect-web": "^0.11.0",
+    "@bufbuild/protoc-gen-es": "^1.4.1",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",

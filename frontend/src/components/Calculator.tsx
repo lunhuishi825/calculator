@@ -4,9 +4,7 @@ import client, { Operation } from "../lib/calculator_client";
 const Calculator = () => {
   const [leftOperand, setLeftOperand] = useState<number>(0);
   const [rightOperand, setRightOperand] = useState<number>(0);
-  const [operation, setOperation] = useState<Operation>(
-    Operation.OPERATION_ADD
-  );
+  const [operation, setOperation] = useState<Operation>(Operation.ADD);
   const [result, setResult] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -38,13 +36,13 @@ const Calculator = () => {
 
   const getOperationSymbol = (op: Operation): string => {
     switch (op) {
-      case Operation.OPERATION_ADD:
+      case Operation.ADD:
         return "+";
-      case Operation.OPERATION_SUBTRACT:
+      case Operation.SUBTRACT:
         return "-";
-      case Operation.OPERATION_MULTIPLY:
+      case Operation.MULTIPLY:
         return "×";
-      case Operation.OPERATION_DIVIDE:
+      case Operation.DIVIDE:
         return "÷";
       default:
         return "";
@@ -89,10 +87,10 @@ const Calculator = () => {
             aria-label="选择操作"
             title="选择计算操作类型"
           >
-            <option value={Operation.OPERATION_ADD}>加法 (+)</option>
-            <option value={Operation.OPERATION_SUBTRACT}>减法 (-)</option>
-            <option value={Operation.OPERATION_MULTIPLY}>乘法 (×)</option>
-            <option value={Operation.OPERATION_DIVIDE}>除法 (÷)</option>
+            <option value={Operation.ADD}>加法 (+)</option>
+            <option value={Operation.SUBTRACT}>减法 (-)</option>
+            <option value={Operation.MULTIPLY}>乘法 (×)</option>
+            <option value={Operation.DIVIDE}>除法 (÷)</option>
           </select>
         </div>
 

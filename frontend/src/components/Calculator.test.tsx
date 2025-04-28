@@ -2,19 +2,20 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Calculator from "./Calculator";
 import client, { Operation } from "../lib/calculator_client";
 
-// 模拟计算器客户端
+// 模拟CalculatorClient
 jest.mock("../lib/calculator_client", () => {
   return {
     __esModule: true,
     default: {
       calculate: jest.fn(),
     },
+    // 从导入的模块中模拟Operation枚举
     Operation: {
-      OPERATION_UNSPECIFIED: 0,
-      OPERATION_ADD: 1,
-      OPERATION_SUBTRACT: 2,
-      OPERATION_MULTIPLY: 3,
-      OPERATION_DIVIDE: 4,
+      UNSPECIFIED: 0,
+      ADD: 1,
+      SUBTRACT: 2,
+      MULTIPLY: 3,
+      DIVIDE: 4,
     },
   };
 });
@@ -52,7 +53,7 @@ describe("计算器组件", () => {
 
     // 选择加法操作
     fireEvent.change(screen.getByLabelText("选择操作"), {
-      target: { value: Operation.OPERATION_ADD },
+      target: { value: Operation.ADD },
     });
 
     // 点击计算按钮
@@ -62,17 +63,21 @@ describe("计算器组件", () => {
     expect(client.calculate).toHaveBeenCalledWith({
       leftOperand: 10,
       rightOperand: 5,
-      operation: Operation.OPERATION_ADD,
+      operation: Operation.ADD,
     });
 
-    // 等待结果显示 - 使用正则表达式或更精确的查询方法
+    // 等待结果显示
     await waitFor(() => {
-      // 检查结果值为15
-      expect(screen.getByText("15", { exact: false })).toBeInTheDocument();
-      // 确保操作数和运算符都在
-      expect(screen.getByText("10", { exact: false })).toBeInTheDocument();
-      expect(screen.getByText("+", { exact: false })).toBeInTheDocument();
-      expect(screen.getByText("5", { exact: false })).toBeInTheDocument();
+      // 查找结果框
+      const resultElement = screen.getByText("15", { exact: false });
+      expect(resultElement).toBeInTheDocument();
+
+      // 验证包含了操作数和操作符
+      const resultContainer = resultElement.closest("p");
+      expect(resultContainer).toHaveTextContent("10");
+      expect(resultContainer).toHaveTextContent("+");
+      expect(resultContainer).toHaveTextContent("5");
+      expect(resultContainer).toHaveTextContent("=");
     });
   });
 
@@ -93,7 +98,7 @@ describe("计算器组件", () => {
 
     // 选择除法操作
     fireEvent.change(screen.getByLabelText("选择操作"), {
-      target: { value: Operation.OPERATION_DIVIDE },
+      target: { value: Operation.DIVIDE },
     });
 
     // 点击计算按钮
@@ -103,7 +108,7 @@ describe("计算器组件", () => {
     expect(client.calculate).toHaveBeenCalledWith({
       leftOperand: 10,
       rightOperand: 0,
-      operation: Operation.OPERATION_DIVIDE,
+      operation: Operation.DIVIDE,
     });
 
     // 等待错误消息显示
