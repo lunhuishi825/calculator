@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package calculator.v1;
+
+option go_package = "calculator/backend/gen/calculator/v1;calculatorv1";
+
+// 定义计算器服务
+service CalculatorService {
+  // 执行计算操作
+  rpc Calculate(CalculateRequest) returns (CalculateResponse) {}
+}
+
+// 计算请求
+message CalculateRequest {
+  double left_operand = 1;   // 左操作数
+  double right_operand = 2;  // 右操作数
+  Operation operation = 3;   // 操作类型
+}
+
+// 计算响应
+message CalculateResponse {
+  double result = 1;         // 计算结果
+  string error = 2;          // 错误信息（如果有）
+}
+
+// 操作类型枚举
+enum Operation {
+  OPERATION_UNSPECIFIED = 0;
+  OPERATION_ADD = 1;        // 加法
+  OPERATION_SUBTRACT = 2;   // 减法
+  OPERATION_MULTIPLY = 3;   // 乘法
+  OPERATION_DIVIDE = 4;     // 除法
+} 
