@@ -1,7 +1,6 @@
-import { createPromiseClient } from "@bufbuild/connect";
 import { createConnectTransport } from "@bufbuild/connect-web";
 
-// 由于我们没有自动生成proto代码，我们需要手动定义接口
+// 操作类型枚举，与后端proto定义一致
 export enum Operation {
   OPERATION_UNSPECIFIED = 0,
   OPERATION_ADD = 1,
@@ -10,6 +9,7 @@ export enum Operation {
   OPERATION_DIVIDE = 4,
 }
 
+// 客户端接口定义
 export interface CalculateRequest {
   leftOperand: number;
   rightOperand: number;
@@ -21,61 +21,57 @@ export interface CalculateResponse {
   error?: string;
 }
 
-// 创建transport
-const transport = createConnectTransport({
-  baseUrl: "http://localhost:8081",
-  // 添加必要的headers
-  useHttpGet: false, // 强制使用POST请求
-});
-
 // 判断是否在测试环境中
 const isTestEnvironment = process.env.NODE_ENV === "test";
 
-// 创建客户端
+// 创建Connect transport
+const transport = createConnectTransport({
+  baseUrl: "http://localhost:8081",
+});
+
+// 创建计算器客户端
 const client = {
   calculate: async (request: CalculateRequest): Promise<CalculateResponse> => {
     try {
-      // 使用fetch API调用后端，遵循Connect协议
+      // 转换请求格式，与proto定义一致
+      const protoRequest = {
+        left_operand: request.leftOperand,
+        right_operand: request.rightOperand,
+        operation: request.operation,
+      };
+
+      // 使用Connect协议调用后端
       const response = await fetch(
         "http://localhost:8081/calculator.v1.CalculatorService/Calculate",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // Connect-RPC 相关头部
             "Connect-Protocol-Version": "1",
           },
-          body: JSON.stringify({
-            left_operand: request.leftOperand,
-            right_operand: request.rightOperand,
-            operation: request.operation, // 发送数字值
-          }),
+          body: JSON.stringify(protoRequest),
         }
       );
 
+      // 使用连接协议解析响应
+      const responseData = await response.json();
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorCode = response.headers.get("Connect-Protocol-Error-Code");
+        const errorMessage = responseData.message || "未知错误";
+        throw new Error(`错误(${errorCode}): ${errorMessage}`);
       }
 
-      const data = await response.json();
-
-      // 处理错误或成功响应
-      if (data.error) {
-        return {
-          result: 0,
-          error: data.error,
-        };
-      }
-
+      // 构造响应对象
       return {
-        result: data.result || 0,
-        error: undefined,
+        result: responseData.result || 0,
+        error: responseData.error,
       };
     } catch (error) {
-      // 只在非测试环境输出控制台错误
       if (!isTestEnvironment) {
         console.error("计算请求失败:", error);
       }
+
       return {
         result: 0,
         error: `请求失败: ${
