@@ -9,7 +9,7 @@
 ```
 .
 ├── backend/                # Go后端服务
-│   ├── api/                # Proto API定义
+│   ├── api/                # Proto API定义（主要定义）
 │   ├── cmd/                # 主命令入口
 │   │   └── server/         # 服务器实现与测试
 │   ├── gen/                # 生成的代码（运行buf generate后生成）
@@ -24,7 +24,7 @@
     │   ├── components/     # React组件及测试
     │   ├── gen/            # 生成的ConnectRPC代码
     │   └── lib/            # 工具库及测试
-    ├── proto/              # Proto定义
+    ├── proto/              # Proto定义（从后端同步）
     ├── public/             # 静态资源
     ├── buf.gen.yaml        # 前端Buf生成配置
     ├── buf.work.yaml       # 前端Buf工作空间
@@ -114,9 +114,12 @@ npm install @bufbuild/connect @bufbuild/connect-web @bufbuild/protobuf
 npm install --save-dev @bufbuild/buf @bufbuild/protoc-gen-connect-web@^0.11.0 @bufbuild/protoc-gen-es@^1.4.1
 ```
 
-3. 生成 Protocol Buffers 代码（如果需要）：
+3. 同步 Proto 文件并生成代码：
 
 ```bash
+# 确保前端Proto定义与后端一致
+cp -r ../backend/api/* ./proto/
+# 生成前端客户端代码
 npx buf generate
 ```
 
@@ -259,6 +262,19 @@ npx jest src/components/Calculator.test.tsx
    - Jest 配置正确
    - 模拟对象正确设置
 
+5. **Proto 文件不同步问题**：
+
+   如果前端和后端的 Proto 文件不同步，可能导致通信问题：
+
+   ```bash
+   # 从后端同步最新的Proto定义到前端
+   cp -r backend/api/* frontend/proto/
+
+   # 然后在前端重新生成代码
+   cd frontend
+   npx buf generate
+   ```
+
 ## API 说明
 
 后端提供了一个 RPC 服务`CalculatorService`，其中包含`Calculate`方法，支持以下操作：
@@ -284,11 +300,21 @@ npx jest src/components/Calculator.test.tsx
 
 ### 修改前端
 
-1. 如需修改接口定义，更新 `frontend/proto` 目录中的 proto 文件
-2. 生成新的客户端代码：`cd frontend && npx buf generate`
-3. 修改 React 组件或客户端代码
-4. 编写或更新测试
-5. 自动热重载将显示更改
+1. 如需修改接口定义，更新 `backend/api/calculator/v1/calculator.proto` 文件
+2. 同步到前端: `cp -r backend/api/* frontend/proto/`
+3. 重新生成代码：`cd frontend && npx buf generate`
+4. 修改 React 组件或客户端代码
+5. 编写或更新测试
+6. 自动热重载将显示更改
+
+### 项目维护最佳实践
+
+为确保前后端接口定义一致：
+
+1. **总是在后端更新 Proto 定义**：所有 Proto 文件变更应始终在`backend/api`目录中进行
+2. **同步到前端**：修改后，使用`cp`命令或其他工具将更改同步到前端
+3. **重新生成代码**：同步后在各自目录运行`buf generate`
+4. **版本控制**：提交时包含两处的 Proto 文件，确保它们在仓库中保持一致
 
 ## 贡献
 

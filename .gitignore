@@ -1,0 +1,45 @@
+# IDE和编辑器
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vs/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+
+# 日志文件
+*.log
+logs/
+npm-debug.log*
+
+# 依赖和构建目录
+node_modules/
+/frontend/node_modules/
+/frontend/.next/
+/frontend/out/
+/frontend/.swc/
+/frontend/build/
+
+# 测试覆盖率
+/frontend/coverage/
+
+# Go特定忽略
+/backend/vendor/
+*.test
+*.out
+/backend/bin/
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# TypeScript构建信息
+*.tsbuildinfo
+/frontend/next-env.d.ts 

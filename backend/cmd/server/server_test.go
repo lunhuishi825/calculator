@@ -16,11 +16,12 @@ import (
 
 	calculatorv1 "calculator/backend/gen/calculator/v1"
 	"calculator/backend/gen/calculator/v1/calculatorv1connect"
+	"calculator/backend/internal/service"
 )
 
 func TestServerIntegration(t *testing.T) {
 	// 创建服务器
-	calculator := &CalculatorServer{}
+	calculator := service.NewCalculatorService()
 	path, handler := calculatorv1connect.NewCalculatorServiceHandler(calculator)
 
 	// 创建路由
@@ -123,7 +124,7 @@ func TestServerIntegration(t *testing.T) {
 // 创建模拟客户端测试
 func TestClientServerInteraction(t *testing.T) {
 	// 创建服务器
-	calculator := &CalculatorServer{}
+	calculator := service.NewCalculatorService()
 	path, handler := calculatorv1connect.NewCalculatorServiceHandler(calculator)
 
 	// 创建路由
